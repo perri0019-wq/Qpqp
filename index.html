@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>BOOM</title>
+
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif;font-weight:bold}
+
+/* ===== BACKGROUND ===== */
+body{
+  margin:0;
+  font-size:22px;
+  color:#eaf6ff;
+  background:
+    radial-gradient(120% 100% at 50% 0%,
+      #1a2f6b 0%,
+      #0a1028 60%,
+      #060914 100%);
+}
+
+/* ===== HEADER ===== */
+.header{
+  display:flex;
+  align-items:center;
+  padding:20px;
+  background:linear-gradient(180deg,#1b2f6a,#101b3a);
+  box-shadow:0 12px 40px rgba(0,0,0,.6);
+}
+
+.avatar{
+  width:80px;height:80px;border-radius:50%;
+  background:rgba(255,255,255,.12);
+}
+
+/* 🔧 УВЕЛИЧЕННАЯ КНОПКА */
+.menu-back{
+  display:none;
+  margin-left:20px;
+  padding:26px 48px;
+  border-radius:32px;
+  cursor:pointer;
+  font-size:26px;
+  background:linear-gradient(180deg,#2a3f7f,#1a2550);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.15),
+    0 10px 30px rgba(0,0,0,.6);
+  transition:.15s ease;
+}
+
+.menu-back:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.2),
+    0 14px 36px rgba(45,140,255,.4);
+}
+
+.balance{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  padding:26px 40px;
+  border-radius:36px;
+  font-size:38px;
+  background:linear-gradient(180deg,#2d8cff,#1f6fff);
+  box-shadow:0 8px 30px rgba(45,140,255,.6);
+  color:#fff;
+}
+
+.coin-icon{width:60px;height:60px;margin-right:14px}
+
+/* ===== MENU ===== */
+.menu{padding:28px}
+
+.bomb-btn{
+  width:100%;
+  height:25vh;
+  position:relative;
+  border-radius:36px;
+  cursor:pointer;
+  background:linear-gradient(180deg,#1c2d66,#141d44);
+  border:none;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.1),
+    inset 0 -12px 20px rgba(0,0,0,.6),
+    0 18px 50px rgba(0,0,0,.7);
+}
+
+.bomb-btn img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:.25;
+}
+
+.bomb-btn span{
+  position:relative;
+  z-index:2;
+  font-size:96px;
+  color:#fff;
+}
+
+/* ===== GAME ===== */
+.game{display:none;padding:26px}
+
+.win-info{
+  text-align:center;
+  font-size:42px;
+  margin-bottom:20px;
+  background:rgba(15,25,60,.55);
+  border-radius:26px;
+  padding:24px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 20px 60px rgba(0,0,0,.6);
+}
+
+/* ===== GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
+}
+
+/* ===== CELLS ===== */
+.cell{
+  aspect-ratio:1/1;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  background:linear-gradient(180deg,#1c2d66,#141d44);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -8px 16px rgba(0,0,0,.6),
+    0 8px 25px rgba(0,0,0,.7);
+  transition:.15s ease;
+  will-change:transform;
+}
+
+.cell:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.1),
+    0 12px 30px rgba(45,140,255,.35);
+}
+
+.cell img{width:88%;height:88%}
+.cell.disabled{pointer-events:none;opacity:.5}
+
+/* 🟢 СПОКОЙНЫЙ НЕОН */
+.cell.safe{
+  background:linear-gradient(180deg,#2fbf8f,#1f8f6a);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.25),
+    0 0 18px rgba(47,191,143,.55),
+    0 10px 30px rgba(0,0,0,.6);
+}
+
+.cell.boom{
+  background:linear-gradient(180deg,#c63a3a,#7a1e1e);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.15),
+    0 12px 35px rgba(198,58,58,.6);
+}
+
+/* ===== CONTROLS ===== */
+.controls{
+  margin-top:20px;
+  background:rgba(15,25,60,.55);
+  border-radius:26px;
+  padding:24px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 20px 60px rgba(0,0,0,.6);
+}
+
+.bet-row{
+  display:flex;
+  gap:16px;
+  margin-bottom:20px;
+}
+
+.bet-row input,
+.bet-row button{
+  flex:1;
+  font-size:32px;
+  padding:20px;
+  border-radius:22px;
+  border:none;
+  text-align:center;
+  background:linear-gradient(180deg,#2a3f7f,#1a2550);
+  color:#fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 8px 25px rgba(0,0,0,.6);
+}
+
+/* ===== SLIDER ===== */
+.slider{
+  text-align:center;
+  font-size:36px;
+  margin-bottom:30px;
+}
+
+.slider input[type=range]{width:96%;height:26px}
+
+/* ===== BUTTONS ===== */
+.play-btn,.cashout-btn{
+  width:100%;
+  font-size:38px;
+  padding:28px;
+  border:none;
+  border-radius:32px;
+  margin-top:16px;
+  cursor:pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.25),
+    0 15px 40px rgba(0,0,0,.6);
+}
+
+.play-btn{
+  background:linear-gradient(180deg,#4aa3ff,#1e6bff);
+  color:#fff;
+}
+
+.play-btn.disabled{opacity:.5;pointer-events:none}
+
+.cashout-btn{
+  background:linear-gradient(180deg,#3edc8b,#1fae63);
+  color:#fff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="avatar"></div>
+  <div class="menu-back" id="menuBack" onclick="backToMenu()">в меню 🎰</div>
+  <div class="balance">
+    <img src="coin.png" class="coin-icon">
+    <span id="balance">1000.00</span>
+  </div>
+</div>
+
+<div class="menu" id="menu">
+  <button class="bomb-btn" onclick="enterBoom()">
+    <img src="boom-icon.png">
+    <span>BOOM</span>
+  </button>
+</div>
+
+<div class="game" id="game">
+  <div class="win-info">
+    Возможный выигрыш<br>
+    <span id="possibleWin">0.00</span><br>
+    x<span id="multiplier">1.00</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="controls">
+    <div class="bet-row">
+      <button onclick="halfBet()">½</button>
+      <input id="bet" type="text" value="1" oninput="formatBet()">
+      <button onclick="doubleBet()">2×</button>
+    </div>
+
+    <div class="slider">
+      Бомб: <span id="bombCount">3</span><br>
+      <input id="bombSlider" type="range" min="2" max="10" value="3" oninput="setBombs(this.value)">
+    </div>
+
+    <button class="play-btn disabled" id="playBtn" onclick="play()">Играть</button>
+    <button class="cashout-btn" id="cashoutBtn" onclick="cashOut()" style="display:none">
+      Забрать выигрыш
+    </button>
+  </div>
+</div>
+
+<script>
+/* 🔊 SOUNDS */
+const sounds={
+  click:new Audio('click.mp3'),
+  coin:new Audio('coin.mp3'),
+  bomb:new Audio('bomb.mp3'),
+  cashout:new Audio('cashout.mp3')
+};
+Object.values(sounds).forEach(s=>{s.volume=.5;s.preload='auto'});
+function playSound(n){
+  if(!sounds[n])return;
+  sounds[n].currentTime=0;
+  sounds[n].play();
+}
+
+/* 📉 MULTIPLIERS */
+const multiplierTable={
+  2:{base:[1.05,1.15,1.27,1.41,1.58,1.78],step:0.22},
+  3:{base:[1.07,1.22,1.40,1.62,1.90,2.25],step:0.35},
+  4:{base:[1.10,1.30,1.55,1.90,2.40],step:0.55},
+  5:{base:[1.12,1.40,1.78,2.32,3.10],step:0.80},
+  6:{base:[1.15,1.50,2.00,2.75],step:1.10},
+  7:{base:[1.18,1.65,2.45,3.90],step:1.60},
+  8:{base:[1.22,1.80,2.90],step:2.20},
+  9:{base:[1.25,1.95,3.20],step:2.80},
+  10:{base:[1.28,2.05,3.45],step:3.50}
+};
+
+/* GAME LOGIC */
+let balance=1000,betValue=0,playing=false,opened=0,multiplier=1;
+let bombs=[],bombsCount=3;
+let clickCount=0;
+
+const grid=document.getElementById('grid');
+const balanceEl=document.getElementById('balance');
+const betEl=document.getElementById('bet');
+const possibleWin=document.getElementById('possibleWin');
+const multiplierEl=document.getElementById('multiplier');
+const playBtn=document.getElementById('playBtn');
+const cashoutBtn=document.getElementById('cashoutBtn');
+const bombSlider=document.getElementById('bombSlider');
+
+function enterBoom(){
+  playSound('click');
+  menu.style.display='none';
+  game.style.display='block';
+  menuBack.style.display='block';
+  buildGrid();
+  validateBet();
+}
+
+function buildGrid(){
+  grid.innerHTML='';
+  for(let i=0;i<25;i++){
+    const c=document.createElement('div');
+    c.className='cell disabled';
+    c.onclick=()=>openCell(c,i);
+    grid.appendChild(c);
+  }
+}
+
+function backToMenu(){
+  menu.style.display='block';
+  game.style.display='none';
+  menuBack.style.display='none';
+}
+
+function setBombs(v){
+  bombsCount=+v;
+  bombCount.innerText=v;
+}
+
+function formatBet(){
+  let v=betEl.value.replace(',', '.').replace(/[^0-9.]/g,'');
+  if(v.includes('.')){
+    const[a,b]=v.split('.');
+    v=a+'.'+b.slice(0,2);
+  }
+  betEl.value=v;
+  validateBet();
+}
+
+function validateBet(){
+  betValue=parseFloat(betEl.value)||0;
+  if(betValue>=1&&betValue<=balance&&!playing){
+    playBtn.classList.remove('disabled');
+  }else{
+    playBtn.classList.add('disabled');
+  }
+}
+
+function halfBet(){
+  betEl.value=(Math.max(1,betValue/2)).toFixed(2);
+  formatBet();
+}
+function doubleBet(){
+  betEl.value=(Math.min(balance,betValue*2)).toFixed(2);
+  formatBet();
+}
+
+function play(){
+  if(playBtn.classList.contains('disabled'))return;
+  balance-=betValue;
+  balanceEl.innerText=balance.toFixed(2);
+  opened=0;
+  multiplier=1;
+  clickCount=0;
+  possibleWin.innerText='0.00';
+  multiplierEl.innerText='1.00';
+  bombs=[];
+  playing=true;
+  playBtn.classList.add('disabled');
+  bombSlider.disabled=true;
+  document.querySelectorAll('.cell').forEach(c=>{
+    c.innerHTML='';
+    c.classList.remove('disabled','safe','boom');
+  });
+  while(bombs.length<bombsCount){
+    const r=Math.floor(Math.random()*25);
+    if(!bombs.includes(r))bombs.push(r);
+  }
+}
+
+function updateMultiplier(){
+  const t=multiplierTable[bombsCount];
+  const i=opened-1;
+  multiplier=i<t.base.length?t.base[i]:t.base.at(-1)+t.step*(i-t.base.length+1);
+}
+
+function openCell(c,i){
+  if(!playing||c.innerHTML)return;
+
+  clickCount++;
+  const forcedBomb = (clickCount%2===0) && Math.random()<0.39;
+
+  if(bombs.includes(i)||forcedBomb){
+    playSound('bomb');
+    c.classList.add('boom');
+    c.innerHTML='<img src="bomb.png">';
+    playing=false;
+    bombSlider.disabled=false;
+    validateBet();
+    cashoutBtn.style.display='none';
+    return;
+  }
+
+  playSound('coin');
+  opened++;
+  updateMultiplier();
+  c.classList.add('safe');
+  c.innerHTML='<img src="coin.png">';
+  possibleWin.innerText=(betValue*multiplier).toFixed(2);
+  multiplierEl.innerText=multiplier.toFixed(2);
+  cashoutBtn.style.display='block';
+}
+
+function cashOut(){
+  playSound('cashout');
+  balance+=betValue*multiplier;
+  balanceEl.innerText=balance.toFixed(2);
+  playing=false;
+  bombSlider.disabled=false;
+  cashoutBtn.style.display='none';
+  validateBet();
+}
+</script>
+
+</body>
+</html>
